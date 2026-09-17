@@ -1,22 +1,10 @@
-# SENTINAL Africa — DSAC Reporting Intelligence
+# SENTINAL Africa — Infrastructure Intelligence Platform
+## GovTech Hackathon 2026 · Live Prototype
 
-**GovTech Hackathon 2026 | DSAC Public Entities Challenge**
+**BACKGROUND IP NOTICE:** This prototype demonstrates pre-existing proprietary 
+technology of SENTINAL Africa (Pty) Ltd, developed prior to the GovTech Hackathon 
+2026. All rights reserved. See LICENSE.md.
 
-## 🔴 [Open Live Prototype →](https://sentina786.github.io)
-No login. Works on mobile.
+**Live prototype:** [Open Platform Demo](index.html)
 
----
-
-32 public entities. R5.2B in funds. One platform.
-
-SENTINAL Africa gives DSAC real-time entity oversight — live RRI risk scores, 
-early warnings, document repository, audit trail, and Minister-ready reports. 
-Powered by the RAPS Algorithm (proprietary).
-
-**All 5 DSAC functional requirements met. Built and live today.**
-
----
-
-**Nosipho Mavuso** — Founder & CEO  
-nosipho@sentinalafrica.co.za 
-*SENTINAL Africa (Pty) Ltd — Built in South Africa, for South Africa*
+nosipho@sentinalafrica.co.za · invest@sentinalafrica.co.za · sentinalafrica.co.za
