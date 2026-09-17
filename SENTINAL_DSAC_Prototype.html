@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SENTINAL Africa — DSAC Public Entities Reporting Intelligence</title>
+<style>
+:root {
+  --bg: #0B1120;
+  --surface: #111827;
+  --card: #1A2235;
+  --border: #1E2D45;
+  --teal: #00D4B8;
+  --purple: #7C3AED;
+  --purple2: #9F67FF;
+  --red: #EF4444;
+  --amber: #F59E0B;
+  --green: #10B981;
+  --blue: #3B82F6;
+  --text: #E2E8F0;
+  --muted: #64748B;
+  --sidebar-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* TOP BAR */
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.logo-badge { display: flex; align-items: center; gap: 10px; }
+.logo-dot { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--teal), var(--purple)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; color: #fff; }
+.logo-name { font-weight: 700; font-size: 15px; color: var(--teal); letter-spacing: 1px; }
+.logo-sub { font-size: 11px; color: var(--muted); }
+.topbar-divider { width: 1px; height: 30px; background: var(--border); }
+.dsac-label { font-size: 11px; color: var(--purple2); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.clock { font-size: 13px; color: var(--muted); font-family: monospace; }
+.status-strip { display: flex; gap: 16px; align-items: center; }
+.stat-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-green { background: var(--green); }
+.dot-amber { background: var(--amber); }
+.dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse 1.4s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* LAYOUT */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+.sidebar-section { padding: 12px 0 4px; }
+.sidebar-label { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 16px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px; cursor: pointer; border-left: 3px solid transparent; color: var(--muted); font-size: 13px; transition: all 0.15s; }
+.nav-item:hover { background: rgba(0,212,184,0.05); color: var(--text); }
+.nav-item.active { background: rgba(124,58,237,0.15); border-left-color: var(--purple); color: var(--purple2); font-weight: 600; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--red); color: #fff; border-radius: 10px; font-size: 10px; padding: 1px 6px; font-weight: 700; }
+.nav-badge-amber { background: var(--amber); color: #000; }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* PAGE HEADER */
+.page-header { margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+/* CARDS */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.card-title { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+.card-value { font-size: 28px; font-weight: 800; }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ENTITY TABLE */
+.entity-table { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 16px; }
+.entity-table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.entity-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px; padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center; cursor: pointer; transition: background 0.1s; }
+.entity-row:hover { background: rgba(255,255,255,0.02); }
+.entity-row:last-child { border-bottom: none; }
+.entity-name { font-weight: 600; font-size: 13px; }
+.entity-type { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.status-overdue { background: rgba(239,68,68,0.15); color: var(--red); }
+.status-risk { background: rgba(245,158,11,0.15); color: var(--amber); }
+.status-track { background: rgba(16,185,129,0.15); color: var(--green); }
+
+/* RRI BAR */
+.rri-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.rri-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.rri-bar-fill { height: 100%; border-radius: 3px; }
+.rri-val { font-size: 13px; font-weight: 700; min-width: 28px; text-align: right; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+.btn-primary { background: var(--purple); color: #fff; }
+.btn-primary:hover { background: #6D28D9; }
+.btn-teal { background: var(--teal); color: #000; }
+.btn-teal:hover { opacity: 0.85; }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* WARNING CARDS */
+.warning-card { border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; border-left: 3px solid; }
+.warning-critical { background: rgba(239,68,68,0.08); border-color: var(--red); }
+.warning-high { background: rgba(245,158,11,0.08); border-color: var(--amber); }
+.warning-medium { background: rgba(59,130,246,0.08); border-color: var(--blue); }
+.warning-title { font-weight: 700; font-size: 13px; }
+.warning-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.warning-actions { margin-top: 10px; display: flex; gap: 8px; }
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 16px; }
+.timeline-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--purple); border: 2px solid var(--bg); }
+.timeline-item.done::before { background: var(--green); }
+.timeline-item.overdue::before { background: var(--red); animation: pulse 1.4s infinite; }
+.timeline-date { font-size: 11px; color: var(--muted); }
+.timeline-text { font-size: 13px; margin-top: 2px; }
+
+/* PROGRESS */
+.progress-wrap { margin: 8px 0; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.progress-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--teal), var(--purple)); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 480px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: block; font-weight: 600; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; }
+.form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+
+/* AUDIT LOG */
+.audit-row { display: flex; align-items: start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.audit-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.audit-icon-lock { background: rgba(124,58,237,0.15); }
+.audit-icon-doc { background: rgba(0,212,184,0.15); }
+.audit-icon-alert { background: rgba(239,68,68,0.15); }
+.audit-text { flex: 1; }
+.audit-action { font-size: 13px; font-weight: 600; }
+.audit-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.audit-time { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.hash-chip { display: inline-block; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); border-radius: 4px; padding: 1px 6px; font-size: 10px; font-family: monospace; color: var(--purple2); margin-top: 3px; }
+
+/* CHART BAR */
+.chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
+.chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chart-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; }
+.chart-bar-label { font-size: 10px; color: var(--muted); }
+.chart-bar-val { font-size: 11px; font-weight: 700; }
+
+/* TAGS */
+.tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+.tag-purple { background: rgba(124,58,237,0.15); color: var(--purple2); }
+.tag-teal { background: rgba(0,212,184,0.15); color: var(--teal); }
+.tag-amber { background: rgba(245,158,11,0.15); color: var(--amber); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 13px; z-index: 2000; display: none; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.toast.show { display: flex; }
+.toast-icon { font-size: 18px; }
+
+/* MS365 CHIP */
+.ms365-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,120,215,0.1); border: 1px solid rgba(0,120,215,0.3); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #60a5fa; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* AGSA BANNER */
+.agsa-banner { background: linear-gradient(90deg, rgba(124,58,237,0.15), rgba(0,212,184,0.1)); border: 1px solid rgba(124,58,237,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 16px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.agsa-banner strong { color: var(--purple2); }
+
+/* REPO ITEM */
+.repo-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+.repo-item:hover { border-color: var(--purple); }
+.repo-icon { font-size: 22px; flex-shrink: 0; }
+.repo-name { font-weight: 600; font-size: 13px; }
+.repo-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.repo-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.verified-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--green); font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+
+/* COUNTDOWN */
+.countdown-box { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px 14px; text-align: center; }
+.countdown-num { font-size: 22px; font-weight: 800; color: var(--red); font-family: monospace; }
+.countdown-lbl { font-size: 10px; color: var(--muted); }
+.deadline-strip { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.deadline-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo-badge">
+    <div class="logo-dot">SA</div>
+    <div>
+      <div class="logo-name">SENTINAL AFRICA</div>
+      <div class="logo-sub">GovTech Oversight Intelligence</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="dsac-label">⚡ DSAC Public Entities Module</div>
+  <div class="topbar-right">
+    <div class="status-strip">
+      <div class="stat-chip"><div class="dot dot-green"></div><span>32 Entities</span></div>
+      <div class="stat-chip"><div class="dot dot-amber"></div><span>9 At Risk</span></div>
+      <div class="stat-chip"><div class="dot dot-red"></div><span>2 Overdue</span></div>
+      <div class="stat-chip"><div class="dot dot-green"></div><span>21 On Track</span></div>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-task')">+ Add Task</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <div class="nav-item active" onclick="switchView('v-dashboard', this)">
+        <span class="nav-icon">🏛️</span> Entity Dashboard
+      </div>
+      <div class="nav-item" onclick="switchView('v-warnings', this)">
+        <span class="nav-icon">⚠️</span> Early Warnings
+        <span class="nav-badge">11</span>
+      </div>
+      <div class="nav-item" onclick="switchView('v-analytics', this)">
+        <span class="nav-icon">📊</span> Analytics
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Compliance</div>
+      <div class="nav-item" onclick="switchView('v-repository', this)">
+        <span class="nav-icon">📁</span> Document Repository
+        <span class="nav-badge-amber nav-badge">164</span>
+      </div>
+      <div class="nav-item" onclick="switchView('v-workspace', this)">
+        <span class="nav-icon">💼</span> Entity Workspaces
+      </div>
+      <div class="nav-item" onclick="switchView('v-tasks', this)">
+        <span class="nav-icon">✅</span> Task Manager
+        <span class="nav-badge">7</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Governance</div>
+      <div class="nav-item" onclick="switchView('v-audit', this)">
+        <span class="nav-icon">🔒</span> Audit Trail
+      </div>
+      <div class="nav-item" onclick="switchView('v-reports', this)">
+        <span class="nav-icon">📋</span> Reports
+      </div>
+    </div>
+    <div style="margin-top:auto;padding:16px;border-top:1px solid var(--border);">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">PFMA COMPLIANCE</div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span style="font-size:11px">Section 65 Reports</span><span style="color:var(--green);font-size:11px">87%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:87%"></div></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">AGSA 2024-25 Evidence Base Active</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="view active" id="v-dashboard">
+      <div class="page-header">
+        <div class="page-title">Entity Dashboard — DSAC Portfolio</div>
+        <div class="page-sub">26 Public Entities · 6 NPOs · Reporting Intelligence powered by RAPS Algorithm</div>
+      </div>
+
+      <div class="agsa-banner">
+        🔍 <strong>AGSA 2024-25 — DSAC Public Entities:</strong> R72M irregular expenditure across entity portfolio · 50% of entities ended the year in deficit · R200M+ material irregularities · Only 151/417 national auditees achieved clean audits.
+      </div>
+
+      <!-- DEADLINE STRIP -->
+      <div class="deadline-strip">
+        <span class="deadline-label">⏳ Annual Report Deadline:</span>
+        <div class="countdown-box">
+          <div class="countdown-num" id="cd-days">--</div>
+          <div class="countdown-lbl">DAYS</div>
+        </div>
+        <div class="countdown-box" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.1)">
+          <div class="countdown-num" style="color:var(--amber)" id="cd-hrs">--</div>
+          <div class="countdown-lbl">HRS</div>
+        </div>
+        <div class="countdown-box" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.1)">
+          <div class="countdown-num" style="color:var(--amber)" id="cd-min">--</div>
+          <div class="countdown-lbl">MIN</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted);margin-left:8px">to 30 September 2026 — PFMA Section 65</span>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-title">Total Entities</div>
+          <div class="card-value" style="color:var(--teal)">32</div>
+          <div class="card-sub">26 Public Entities + 6 NPOs</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Average RRI Score</div>
+          <div class="card-value" style="color:var(--amber)">52.4</div>
+          <div class="card-sub">↑ 8.3 pts from Q2</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Reports Overdue</div>
+          <div class="card-value" style="color:var(--red)">2</div>
+          <div class="card-sub">Boxing SA + SAHRA</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Funds Accounted</div>
+          <div class="card-value" style="color:var(--green)">R4.5B</div>
+          <div class="card-sub">of R5.2B allocated (AGSA · Portfolio Committee 2025)</div>
+        </div>
+      </div>
+
+      <!-- ENTITY TABLE -->
+      <div class="entity-table">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+          <span style="font-weight:700;font-size:14px">All Entities</span>
+          <span style="flex:1"></span>
+          <input class="form-input" style="width:200px;padding:6px 10px" placeholder="🔍 Search entity..." oninput="filterEntities(this.value)">
+          <select class="form-select" style="width:140px;padding:6px 10px" onchange="filterStatus(this.value)">
+            <option value="">All Statuses</option>
+            <option value="overdue">Overdue</option>
+            <option value="risk">At Risk</option>
+            <option value="track">On Track</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-escalate')">🚨 Escalate to DG</button>
+        </div>
+        <div class="entity-table-header">
+          <div>Entity</div>
+          <div>Status</div>
+          <div>RRI Score</div>
+          <div>Last Report</div>
+          <div>Days Overdue</div>
+          <div>Actions</div>
+        </div>
+        <div id="entity-list">
+          <!-- Overdue -->
+          <div class="entity-row" data-status="overdue">
+            <div><div class="entity-name">Boxing SA</div><div class="entity-type">Sports Control Board · PE</div></div>
+            <div><span class="status-badge status-overdue">● Overdue</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:94%;background:var(--red)"></div></div><span class="rri-val" style="color:var(--red)">94</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Mar 2025</div>
+            <div style="color:var(--red);font-weight:700;font-size:13px">+147 days</div>
+            <div><button class="btn btn-danger btn-sm" onclick="openModal('modal-escalate')">Escalate</button></div>
+          </div>
+          <div class="entity-row" data-status="overdue">
+            <div><div class="entity-name">SAHRA</div><div class="entity-type">Heritage Agency · PE</div></div>
+            <div><span class="status-badge status-overdue">● Overdue</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:89%;background:var(--red)"></div></div><span class="rri-val" style="color:var(--red)">89</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Apr 2025</div>
+            <div style="color:var(--red);font-weight:700;font-size:13px">+118 days</div>
+            <div><button class="btn btn-danger btn-sm" onclick="openModal('modal-escalate')">Escalate</button></div>
+          </div>
+          <!-- At Risk -->
+          <div class="entity-row" data-status="risk">
+            <div><div class="entity-name">SA Sports Confederation</div><div class="entity-type">Sporting Body · NPO</div></div>
+            <div><span class="status-badge status-risk">● At Risk</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:78%;background:var(--amber)"></div></div><span class="rri-val" style="color:var(--amber)">78</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Jun 2025</div>
+            <div style="color:var(--amber);font-weight:700;font-size:13px">+43 days</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Reminder sent to SA Sports Confederation')">Remind</button></div>
+          </div>
+          <div class="entity-row" data-status="risk">
+            <div><div class="entity-name">National Arts Council</div><div class="entity-type">Arts Funding · PE</div></div>
+            <div><span class="status-badge status-risk">● At Risk</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:74%;background:var(--amber)"></div></div><span class="rri-val" style="color:var(--amber)">74</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Jul 2025</div>
+            <div style="color:var(--amber);font-weight:700;font-size:13px">+21 days</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Reminder sent to NAC')">Remind</button></div>
+          </div>
+          <div class="entity-row" data-status="risk">
+            <div><div class="entity-name">SASCOC</div><div class="entity-type">Olympic Committee · NPO</div></div>
+            <div><span class="status-badge status-risk">● At Risk</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:61%;background:var(--amber)"></div></div><span class="rri-val" style="color:var(--amber)">61</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Aug 2025</div>
+            <div style="color:var(--amber);font-weight:700;font-size:13px">+8 days</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Reminder sent to SASCOC')">Remind</button></div>
+          </div>
+          <!-- On Track -->
+          <div class="entity-row" data-status="track">
+            <div><div class="entity-name">Blind SA</div><div class="entity-type">Disability NPO · NPO</div></div>
+            <div><span class="status-badge status-track">● On Track</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:22%;background:var(--green)"></div></div><span class="rri-val" style="color:var(--green)">22</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Aug 2025</div>
+            <div style="color:var(--green);font-weight:700;font-size:13px">—</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Report verified ✓')">View</button></div>
+          </div>
+          <div class="entity-row" data-status="track">
+            <div><div class="entity-name">Sport & Recreation SA</div><div class="entity-type">Recreation Agency · PE</div></div>
+            <div><span class="status-badge status-track">● On Track</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:18%;background:var(--green)"></div></div><span class="rri-val" style="color:var(--green)">18</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Sep 2025</div>
+            <div style="color:var(--green);font-weight:700;font-size:13px">—</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Report verified ✓')">View</button></div>
+          </div>
+          <div class="entity-row" data-status="track">
+            <div><div class="entity-name">Boxing SA Oversight Comm.</div><div class="entity-type">Oversight Body · PE</div></div>
+            <div><span class="status-badge status-track">● On Track</span></div>
+            <div><div class="rri-bar-wrap"><div class="rri-bar-bg"><div class="rri-bar-fill" style="width:15%;background:var(--green)"></div></div><span class="rri-val" style="color:var(--green)">15</span></div></div>
+            <div style="font-size:12px;color:var(--muted)">Sep 2025</div>
+            <div style="color:var(--green);">—</div>
+            <div><button class="btn btn-ghost btn-sm" onclick="toast('Report verified ✓')">View</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EARLY WARNINGS ===== -->
+    <div class="view" id="v-warnings">
+      <div class="page-header">
+        <div class="page-title">Early Warning Engine</div>
+        <div class="page-sub">RAPS Algorithm — Real-time Risk-Adjusted Priority Scoring · 11 Active Alerts</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card" style="border-color:rgba(239,68,68,0.3)">
+          <div class="card-title" style="color:var(--red)">🚨 Critical (30+ Days Overdue)</div>
+          <div class="card-value" style="color:var(--red)">2</div>
+          <div class="card-sub">Immediate DG intervention required</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,0.3)">
+          <div class="card-title" style="color:var(--amber)">⚠️ High Risk (15–30 Days)</div>
+          <div class="card-value" style="color:var(--amber)">5</div>
+          <div class="card-sub">Escalation pathway activated</div>
+        </div>
+      </div>
+
+      <div class="warning-card warning-critical">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="warning-title">🔴 Boxing SA — Annual Report 147 Days Overdue</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="tag tag-purple">RRI: 94</span>
+            <span class="tag" style="background:rgba(239,68,68,0.15);color:var(--red)">CRITICAL</span>
+          </div>
+        </div>
+        <div class="warning-meta">PFMA Section 65 violation · Qualified audit FY2024 · R84M budget not accounted · Triggered: 3 hrs ago</div>
+        <div class="warning-actions">
+          <button class="btn btn-danger btn-sm" onclick="openModal('modal-escalate')">🚨 Escalate to DG</button>
+          <button class="btn btn-ghost btn-sm" onclick="switchView('v-workspace', document.querySelector('.nav-item:nth-child(8)'))">View Workspace</button>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Reminder sent via email + SMS')">Send Reminder</button>
+        </div>
+      </div>
+
+      <div class="warning-card warning-critical">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="warning-title">🔴 SAHRA — Annual Report 118 Days Overdue</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="tag tag-purple">RRI: 89</span>
+            <span class="tag" style="background:rgba(239,68,68,0.15);color:var(--red)">CRITICAL</span>
+          </div>
+        </div>
+        <div class="warning-meta">Heritage mandate impact · R127M heritage grants unaccounted · Last contact: 14 Sep 2026 · Triggered: 1 day ago</div>
+        <div class="warning-actions">
+          <button class="btn btn-danger btn-sm" onclick="openModal('modal-escalate')">🚨 Escalate to DG</button>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Reminder sent to SAHRA CFO')">Send Reminder</button>
+        </div>
+      </div>
+
+      <div class="warning-card warning-high">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="warning-title">🟠 SA Sports Confederation — 43 Days, No Submission</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="tag tag-purple">RRI: 78</span>
+            <span class="tag tag-amber">HIGH</span>
+          </div>
+        </div>
+        <div class="warning-meta">APP targets: 4/7 met · R32M sport development allocation · Q3 performance report pending · Triggered: 2 days ago</div>
+        <div class="warning-actions">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Automated 15-day reminder sent')">Auto-Remind</button>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Performance note filed')">Add Note</button>
+        </div>
+      </div>
+
+      <div class="warning-card warning-high">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="warning-title">🟠 National Arts Council — APP Target Slippage</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="tag tag-purple">RRI: 74</span>
+            <span class="tag tag-amber">HIGH</span>
+          </div>
+        </div>
+        <div class="warning-meta">Only 3/9 Q1 APP targets met · Bursary disbursements delayed · Cultural projects paused · Triggered: 4 days ago</div>
+        <div class="warning-actions">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Performance review scheduled')">Schedule Review</button>
+        </div>
+      </div>
+
+      <div class="warning-card warning-medium">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="warning-title">🔵 SASCOC — Quarterly Report Approaching Deadline</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="tag tag-purple">RRI: 61</span>
+            <span class="tag tag-teal">MEDIUM</span>
+          </div>
+        </div>
+        <div class="warning-meta">8 days to submission deadline · Draft submitted, approval pending · 2026 Commonwealth Games prep report required</div>
+        <div class="warning-actions">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Approval reminder sent to SASCOC Board')">Nudge Approval</button>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+        <div style="font-weight:700;margin-bottom:12px">RAPS Score Components</div>
+        <div class="grid-3">
+          <div>
+            <div class="card-title">Reporting Frequency (RF)</div>
+            <div style="font-size:12px;color:var(--muted)">Days overdue relative to PFMA deadline — weighted 40%</div>
+          </div>
+          <div>
+            <div class="card-title">Audit History (AH)</div>
+            <div style="font-size:12px;color:var(--muted)">Prior qualified/disclaimed audits — weighted 35%</div>
+          </div>
+          <div>
+            <div class="card-title">Financial Exposure (FE)</div>
+            <div style="font-size:12px;color:var(--muted)">Unaccounted allocation as % of budget — weighted 25%</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--purple2)">RRI = (RF × 0.40) + (AH × 0.35) + (FE × 0.25) · Score 0–100 · Auto-escalates at RRI ≥ 80</div>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <div class="view" id="v-analytics">
+      <div class="page-header">
+        <div class="page-title">Analytics & Performance Intelligence</div>
+        <div class="page-sub">APP Targets · Audit Trends · Demographics · Economic Impact</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-title">APP Targets Overview — FY 2025/26</div>
+          <div style="margin-top:8px">
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Targets Set</span><span style="color:var(--text)">214</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Targets Met (Q1)</span><span style="color:var(--green)">134 (63%)</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:63%;background:var(--green)"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>At Risk</span><span style="color:var(--amber)">52 (24%)</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:24%;background:var(--amber)"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Not Met</span><span style="color:var(--red)">28 (13%)</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:13%;background:var(--red)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Audit Opinions Trend — DSAC Entities</div>
+          <div class="chart-bars" style="margin-top:12px">
+            <div class="chart-bar-wrap">
+              <div class="chart-bar-val" style="color:var(--green)">12</div>
+              <div class="chart-bar" style="height:60%;background:var(--green)"></div>
+              <div class="chart-bar-label">FY22</div>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar-val" style="color:var(--green)">15</div>
+              <div class="chart-bar" style="height:75%;background:var(--green)"></div>
+              <div class="chart-bar-label">FY23</div>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar-val" style="color:var(--amber)">13</div>
+              <div class="chart-bar" style="height:65%;background:var(--amber)"></div>
+              <div class="chart-bar-label">FY24</div>
+            </div>
+            <div class="chart-bar-wrap">
+              <div class="chart-bar-val" style="color:var(--red)">10</div>
+              <div class="chart-bar" style="height:50%;background:var(--red)"></div>
+              <div class="chart-bar-label">FY25</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-size:11px">
+            <span style="color:var(--green)">● Clean</span>
+            <span style="color:var(--amber)">● Qualified</span>
+            <span style="color:var(--red)">● Disclaimed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Staff Demographics — DSAC Entities</div>
+          <div style="margin-top:8px">
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Black African</span><span>67%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Female</span><span>54%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:54%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Youth (18–35)</span><span>38%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:38%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>PWD</span><span>2.1%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:2.1%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Job Creation — DSAC Portfolio</div>
+          <div class="card-value" style="color:var(--teal)">18,420</div>
+          <div class="card-sub">Direct jobs supported FY25</div>
+          <div style="margin-top:12px">
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Sport sector</span><span>9,200</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Arts & Culture</span><span>6,800</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Heritage</span><span>2,420</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:13%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Fund Accountability Tracker</div>
+          <div class="card-value" style="color:var(--green)">R4.5B</div>
+          <div class="card-sub">accounted of R5.2B total (AGSA-verified)</div>
+          <div style="margin-top:12px">
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Sport</span><span style="color:var(--green)">R2.1B ✓</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:88%;background:var(--green)"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Arts & Culture</span><span style="color:var(--amber)">R1.4B ⚠</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:82%;background:var(--amber)"></div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Heritage</span><span style="color:var(--red)">R0.7B ✗</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:58%;background:var(--red)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REPOSITORY ===== -->
+    <div class="view" id="v-repository">
+      <div class="page-header">
+        <div class="page-title">Document Intelligence Repository</div>
+        <div class="page-sub">164 Documents · AI-Indexed · POPIA Sovereign Cloud · Auto-versioned</div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="card" style="text-align:center">
+          <div style="font-size:28px">📋</div>
+          <div class="card-value" style="font-size:20px;color:var(--teal)">48</div>
+          <div class="card-sub">Annual Reports</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:28px">📊</div>
+          <div class="card-value" style="font-size:20px;color:var(--purple2)">64</div>
+          <div class="card-sub">Quarterly Reports</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:28px">🔍</div>
+          <div class="card-value" style="font-size:20px;color:var(--amber)">31</div>
+          <div class="card-sub">AGSA Findings</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:28px">📁</div>
+          <div class="card-value" style="font-size:20px;color:var(--green)">21</div>
+          <div class="card-sub">Strategy Docs</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <input class="form-input" style="flex:1" placeholder="🔍 Search documents, entities, audit findings...">
+        <select class="form-select" style="width:160px">
+          <option>All Types</option>
+          <option>Annual Reports</option>
+          <option>Quarterly Reports</option>
+          <option>AGSA Findings</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-upload')">📤 Upload Document</button>
+      </div>
+
+      <div class="repo-item">
+        <div class="repo-icon">📋</div>
+        <div>
+          <div class="repo-name">Boxing SA — Annual Report FY2024</div>
+          <div class="repo-meta">Uploaded: 2024-07-15 · PDF, 84 pages · Qualified audit opinion · CFO: J. Sithole</div>
+        </div>
+        <div class="repo-right">
+          <span class="tag tag-amber">Qualified</span>
+          <span class="verified-badge">✓ AGSA Verified</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Document opened')">Open</button>
+        </div>
+      </div>
+
+      <div class="repo-item">
+        <div class="repo-icon">📋</div>
+        <div>
+          <div class="repo-name">SAHRA — Annual Report FY2024</div>
+          <div class="repo-meta">Uploaded: 2024-08-02 · PDF, 127 pages · Disclaimed audit · CEO: L. Ndlela</div>
+        </div>
+        <div class="repo-right">
+          <span class="tag" style="background:rgba(239,68,68,0.15);color:var(--red)">Disclaimed</span>
+          <span class="verified-badge">✓ AGSA Verified</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Document opened')">Open</button>
+        </div>
+      </div>
+
+      <div class="repo-item">
+        <div class="repo-icon">📊</div>
+        <div>
+          <div class="repo-name">NAC — Q1 Performance Report FY2025/26</div>
+          <div class="repo-meta">Uploaded: 2025-07-28 · Excel + PDF · 3/9 targets met · Submitted by CFO</div>
+        </div>
+        <div class="repo-right">
+          <span class="tag tag-amber">At Risk</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Document opened')">Open</button>
+        </div>
+      </div>
+
+      <div class="repo-item">
+        <div class="repo-icon">🔍</div>
+        <div>
+          <div class="repo-name">AGSA Management Letter — SASCOC FY2024</div>
+          <div class="repo-meta">Received: 2024-09-10 · PDF · 12 findings · Priority: 3 material, 9 minor</div>
+        </div>
+        <div class="repo-right">
+          <span class="verified-badge">✓ AGSA Verified</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('AGSA letter opened')">Open</button>
+        </div>
+      </div>
+
+      <div class="repo-item">
+        <div class="repo-icon">📁</div>
+        <div>
+          <div class="repo-name">Blind SA — Annual Performance Plan FY2025/26</div>
+          <div class="repo-meta">Uploaded: 2025-04-01 · PDF, 34 pages · 18 targets · Clean audit history</div>
+        </div>
+        <div class="repo-right">
+          <span class="tag tag-teal">On Track</span>
+          <span class="verified-badge">✓ Verified</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Document opened')">Open</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;">
+        🔒 <span>All documents encrypted at rest (AES-256) · POPIA compliant · Sovereign cloud hosting · Immutable version history · Retention: 15 years per PFMA</span>
+      </div>
+    </div>
+
+    <!-- ===== WORKSPACES ===== -->
+    <div class="view" id="v-workspace">
+      <div class="page-header">
+        <div class="page-title">Entity Workspaces</div>
+        <div class="page-sub">Collaborative reporting environment · Microsoft 365 integrated · Real-time comments</div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <div class="ms365-chip">🔷 Microsoft 365 Connected</div>
+        <div class="ms365-chip">📂 SharePoint Sync Active</div>
+        <div class="ms365-chip">💬 Teams Notifications</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color:rgba(239,68,68,0.3)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-weight:700;font-size:15px">Boxing SA Workspace</div>
+              <div style="font-size:11px;color:var(--red)">🔴 Overdue — DG Notified</div>
+            </div>
+            <span class="status-badge status-overdue">Overdue</span>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="timeline-date">01 Apr 2025</div>
+              <div class="timeline-text">FY2024 Annual Report period closed</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-date">31 May 2025</div>
+              <div class="timeline-text">Draft submitted to Boxing SA Board</div>
+            </div>
+            <div class="timeline-item overdue">
+              <div class="timeline-date" style="color:var(--red)">31 May 2025 (DUE)</div>
+              <div class="timeline-text" style="color:var(--red)">Submission to DSAC — MISSED</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">14 Sep 2026</div>
+              <div class="timeline-text">SENTINAL auto-escalation to DG — No response</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">COMMENTS (3)</div>
+            <div style="font-size:12px;padding:8px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:6px">
+              <strong style="color:var(--purple2)">DSAC Director:</strong> "Third reminder sent. No response from CEO. Escalating to Minister."
+              <div style="font-size:10px;color:var(--muted);margin-top:3px">15 Sep 2026 · 09:14</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-escalate')">🚨 Escalate to DG</button>
+            <button class="btn btn-ghost btn-sm" onclick="toast('Workspace file opened in SharePoint')">Open in SharePoint</button>
+          </div>
+        </div>
+
+        <div class="card" style="border-color:rgba(245,158,11,0.3)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-weight:700;font-size:15px">NAC Workspace</div>
+              <div style="font-size:11px;color:var(--amber)">🟠 Q1 Performance Under Review</div>
+            </div>
+            <span class="status-badge status-risk">At Risk</span>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="timeline-date">30 Jun 2025</div>
+              <div class="timeline-text">Q1 targets closed — 3/9 met</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-date">31 Jul 2025</div>
+              <div class="timeline-text">Performance report submitted (late)</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">15 Sep 2026</div>
+              <div class="timeline-text">DSAC review meeting scheduled</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">APPROVAL WORKFLOW</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+              <span style="background:var(--green);color:#000;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">CFO ✓</span>
+              <span>→</span>
+              <span style="background:var(--amber);color:#000;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">DG Pending</span>
+              <span>→</span>
+              <span style="background:var(--border);color:var(--muted);padding:2px 8px;border-radius:20px;font-size:10px">Minister</span>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="toast('Opened in SharePoint — NAC workspace')">Open in SharePoint</button>
+            <button class="btn btn-ghost btn-sm" onclick="toast('Teams channel opened')">Open Teams Channel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TASKS ===== -->
+    <div class="view" id="v-tasks">
+      <div class="page-header">
+        <div class="page-title">Compliance Task Manager</div>
+        <div class="page-sub">7 open tasks · Automated from PFMA milestones + AGSA findings</div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openModal('modal-task')">+ Add Task</button>
+        <button class="btn btn-ghost">Filter by Entity</button>
+        <button class="btn btn-ghost">Filter by Priority</button>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;border-color:rgba(239,68,68,0.3)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🔴</span>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">Obtain Annual Report from Boxing SA CEO — URGENT</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Assigned to: DSAC Director · Due: 30 Sep 2026 · Entity: Boxing SA · Priority: CRITICAL</div>
+          </div>
+          <span class="tag" style="background:rgba(239,68,68,0.15);color:var(--red)">Critical</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Task marked complete ✓')">Complete</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;border-color:rgba(239,68,68,0.3)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🔴</span>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">Escalate SAHRA non-compliance to Minister</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Assigned to: DG Office · Due: 20 Sep 2026 · Entity: SAHRA · Priority: HIGH</div>
+          </div>
+          <span class="tag" style="background:rgba(239,68,68,0.15);color:var(--red)">High</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Task marked complete ✓')">Complete</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;border-color:rgba(245,158,11,0.3)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🟠</span>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">Review NAC Q1 Performance — Approve or query</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Assigned to: DG · Due: 18 Sep 2026 · Entity: NAC · Priority: MEDIUM</div>
+          </div>
+          <span class="tag tag-amber">Medium</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Task marked complete ✓')">Complete</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">🟡</span>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">Verify SASCOC draft submission — 8 days remaining</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Assigned to: Analyst · Due: 25 Sep 2026 · Entity: SASCOC · Priority: MEDIUM</div>
+          </div>
+          <span class="tag tag-amber">Medium</span>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Task marked complete ✓')">Complete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== AUDIT TRAIL ===== -->
+    <div class="view" id="v-audit">
+      <div class="page-header">
+        <div class="page-title">DSAC Governance Audit Trail</div>
+        <div class="page-sub">Immutable · PFMA-aligned · Cryptographically hashed · Cannot be altered or deleted</div>
+      </div>
+
+      <div class="agsa-banner">
+        🔐 <strong>Immutable Ledger:</strong> Every action cryptographically signed · SHA-256 block hash chain · Meets Section 40 PFMA requirements for audit readiness
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-weight:700">Recent Audit Events</div>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Audit log exported as PDF')">Export Log</button>
+        </div>
+
+        <div class="audit-row">
+          <div class="audit-icon audit-icon-alert">🚨</div>
+          <div class="audit-text">
+            <div class="audit-action">AUTO-ESCALATION — Boxing SA Non-Compliance</div>
+            <div class="audit-detail">System triggered DG notification · PFMA violation threshold exceeded (90 days) · No user intervention</div>
+            <div class="hash-chip">sha256: a3f7b2...e91d</div>
+          </div>
+          <div class="audit-time">17 Sep 2026<br>08:42:17</div>
+        </div>
+
+        <div class="audit-row">
+          <div class="audit-icon audit-icon-doc">📄</div>
+          <div class="audit-text">
+            <div class="audit-action">DOCUMENT UPLOADED — SAHRA Management Letter</div>
+            <div class="audit-detail">User: dsac.director@dsac.gov.za · File: SAHRA_AGSA_Mgmt_Letter_FY24.pdf · Size: 2.4MB · Verified: AGSA signature match</div>
+            <div class="hash-chip">sha256: 7c29a1...f03e</div>
+          </div>
+          <div class="audit-time">16 Sep 2026<br>14:23:05</div>
+        </div>
+
+        <div class="audit-row">
+          <div class="audit-icon audit-icon-lock">🔒</div>
+          <div class="audit-text">
+            <div class="audit-action">TASK CREATED — NAC Performance Review</div>
+            <div class="audit-detail">Created by: analyst@dsac.gov.za · Assigned to: DG Office · Due: 18 Sep 2026 · Priority: Medium</div>
+            <div class="hash-chip">sha256: 2d5c8f...b17a</div>
+          </div>
+          <div class="audit-time">15 Sep 2026<br>10:00:31</div>
+        </div>
+
+        <div class="audit-row">
+          <div class="audit-icon audit-icon-doc">📊</div>
+          <div class="audit-text">
+            <div class="audit-action">APP TARGET UPDATED — Blind SA Q1 Results</div>
+            <div class="audit-detail">18/18 targets confirmed met · Source: Annual Performance Report · Verified by: DSAC Analyst</div>
+            <div class="hash-chip">sha256: 9e4d3b...c28f</div>
+          </div>
+          <div class="audit-time">14 Sep 2026<br>16:44:52</div>
+        </div>
+
+        <div class="audit-row">
+          <div class="audit-icon audit-icon-alert">🔐</div>
+          <div class="audit-text">
+            <div class="audit-action">SYSTEM LOGIN — DSAC Director authenticated</div>
+            <div class="audit-detail">IP: [REDACTED] · Azure AD SSO · MFA verified · Session: 2h 14m</div>
+            <div class="hash-chip">sha256: f81e6d...a94c</div>
+          </div>
+          <div class="audit-time">14 Sep 2026<br>07:30:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div class="view" id="v-reports">
+      <div class="page-header">
+        <div class="page-title">DSAC Oversight Reports</div>
+        <div class="page-sub">Auto-generated · PFMA-compliant · Minister-ready</div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card" style="cursor:pointer" onclick="toast('Generating Q2 Oversight Report...')">
+          <div style="font-size:28px;margin-bottom:8px">📋</div>
+          <div style="font-weight:700;margin-bottom:4px">Quarterly Oversight Report</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Covers all 32 entities · APP progress · Financial accountability</div>
+          <div style="font-size:11px;color:var(--purple2)">Q2 FY2025/26 · Due 30 Sep</div>
+          <button class="btn btn-primary btn-sm" style="margin-top:12px;width:100%" onclick="toast('Q2 Report generated — 47 pages')">Generate Report</button>
+        </div>
+
+        <div class="card" style="cursor:pointer">
+          <div style="font-size:28px;margin-bottom:8px">🔍</div>
+          <div style="font-weight:700;margin-bottom:4px">AGSA Audit Package</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Consolidated AGSA findings + management responses + action plans</div>
+          <div style="font-size:11px;color:var(--amber)">31 findings · 12 open · 19 resolved</div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%" onclick="toast('AGSA package compiled — 89 pages')">Compile Package</button>
+        </div>
+
+        <div class="card" style="cursor:pointer">
+          <div style="font-size:28px;margin-bottom:8px">💰</div>
+          <div style="font-weight:700;margin-bottom:4px">Fund Accountability Report</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">R5.2B allocated across 32 entities (AGSA · Portfolio Committee 2025) · Expenditure vs targets</div>
+          <div style="font-size:11px;color:var(--green)">87% accounted · R0.6B gap identified</div>
+          <button class="btn btn-teal btn-sm" style="margin-top:12px;width:100%" onclick="toast('Fund accountability report generated')">Generate Report</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="font-weight:700;margin-bottom:12px">30 September Reporting Package — Checklist</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--green)">✅</span> Blind SA Annual Report received</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--green)">✅</span> Sport & Recreation SA submitted</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--amber)">⚠️</span> SASCOC — awaiting board approval</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--amber)">⚠️</span> NAC — Q1 review pending DG sign-off</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--red)">❌</span> Boxing SA — OVERDUE, escalated</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;width:48%"><span style="color:var(--red)">❌</span> SAHRA — OVERDUE, DG notified</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-title">➕ Add Compliance Task</div>
+    <div class="form-group">
+      <label class="form-label">Task Title</label>
+      <input class="form-input" placeholder="e.g. Follow up on Boxing SA annual report">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Entity</label>
+        <select class="form-select">
+          <option>Boxing SA</option>
+          <option>SAHRA</option>
+          <option>NAC</option>
+          <option>SASCOC</option>
+          <option>Blind SA</option>
+          <option>SA Sports Confederation</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-select">
+          <option>Critical</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Due Date</label>
+        <input class="form-input" type="date" value="2026-09-30">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assigned To</label>
+        <input class="form-input" placeholder="e.g. dsac.director@dsac.gov.za">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" placeholder="Add context or instructions..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-task')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-task');toast('Task created and assigned ✓')">Create Task</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-escalate">
+  <div class="modal">
+    <div class="modal-title">🚨 Escalate to Director-General</div>
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px">
+      This will trigger a formal PFMA escalation logged in the immutable audit trail and notify the DG's office via email and Teams.
+    </div>
+    <div class="form-group">
+      <label class="form-label">Entity</label>
+      <select class="form-select">
+        <option>Boxing SA — 147 days overdue</option>
+        <option>SAHRA — 118 days overdue</option>
+        <option>SA Sports Confederation</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Escalation Reason</label>
+      <textarea class="form-textarea" placeholder="Summarise the compliance failure and actions already taken...">Annual report not submitted 147 days past PFMA deadline. Three reminders sent with no response. Budget of R84M not accounted for. Recommend formal intervention per Section 65(3) PFMA.</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Proposed Intervention</label>
+      <select class="form-select">
+        <option>Formal written notice to Board Chairperson</option>
+        <option>Withhold quarterly transfer payment</option>
+        <option>Refer to National Treasury</option>
+        <option>Recommend ministerial intervention</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-escalate')">Cancel</button>
+      <button class="btn btn-danger" onclick="closeModal('modal-escalate');toast('🚨 Escalation sent to DG · Audit trail updated')">Send Escalation</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal">
+    <div class="modal-title">📤 Upload Document</div>
+    <div class="form-group">
+      <label class="form-label">Document Type</label>
+      <select class="form-select">
+        <option>Annual Report</option>
+        <option>Quarterly Performance Report</option>
+        <option>AGSA Management Letter</option>
+        <option>Annual Performance Plan</option>
+        <option>Strategy Document</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Entity</label>
+      <select class="form-select">
+        <option>Boxing SA</option>
+        <option>SAHRA</option>
+        <option>NAC</option>
+        <option>SASCOC</option>
+        <option>Blind SA</option>
+        <option>SA Sports Confederation</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Financial Year</label>
+      <select class="form-select">
+        <option>FY2025/26</option>
+        <option>FY2024/25</option>
+        <option>FY2023/24</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div style="border:2px dashed var(--border);border-radius:8px;padding:24px;text-align:center;cursor:pointer" onclick="toast('File selector opened')">
+        <div style="font-size:28px;margin-bottom:8px">📁</div>
+        <div style="font-size:13px;color:var(--muted)">Click to select file or drag & drop</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">PDF, DOCX, XLSX — Max 50MB</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-upload')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-upload');toast('Document uploaded and indexed ✓')">Upload & Index</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-icon">✅</span><span id="toast-msg">Done</span></div>
+
+<script>
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-ZA', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Countdown to 30 Sep 2026 23:59
+function updateCountdown() {
+  const deadline = new Date('2026-09-30T23:59:00');
+  const now = new Date();
+  const diff = deadline - now;
+  if (diff <= 0) {
+    ['cd-days','cd-hrs','cd-min'].forEach(id => document.getElementById(id).textContent = '0');
+    return;
+  }
+  const days = Math.floor(diff / 86400000);
+  const hrs = Math.floor((diff % 86400000) / 3600000);
+  const min = Math.floor((diff % 3600000) / 60000);
+  document.getElementById('cd-days').textContent = days;
+  document.getElementById('cd-hrs').textContent = String(hrs).padStart(2,'0');
+  document.getElementById('cd-min').textContent = String(min).padStart(2,'0');
+}
+setInterval(updateCountdown, 60000);
+updateCountdown();
+
+// Nav
+function switchView(id, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+// Modals
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// Toast
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Filter
+function filterEntities(val) {
+  document.querySelectorAll('.entity-row').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+function filterStatus(val) {
+  document.querySelectorAll('.entity-row').forEach(r => {
+    r.style.display = !val || r.dataset.status === val ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
